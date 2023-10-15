@@ -9,7 +9,9 @@ from decouple import config
 import openai
 
 # Custom function imports
-from functions.openai_requests import convert_audio_to_text
+from functions.database import store_messages
+from functions.openai_requests import convert_audio_to_text, get_chat_response
+
 
 # Initiate our application
 app = FastAPI()
@@ -50,9 +52,20 @@ async def get_audio():
     # Decode Audio
     message_decoded = convert_audio_to_text(audio_input)
     
-    print(message_decoded)
+    # Guard to ensure message has decoded
+    if not message_decoded:
+        return HTTPException(status_code=400, detail="Failed to Decode Message")
+    
+    #Get Chat Response
+    chat_response = get_chat_response(message_decoded)
+    
+    # Store Chat Response
+    store_messages(message_decoded, chat_response)
+    
+    #print(chat_response)
     
     return "Conversion Completed"
+
 
 # Post bot response
 # Note: Not playing in browser when using post request
