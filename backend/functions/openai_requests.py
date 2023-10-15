@@ -1,6 +1,9 @@
 import openai
 from decouple import config 
 
+# Import Custom functions
+from .database import get_recent_messages
+
 # Retrieve our environment variables
 openai.organization = config("OPEN_AI_ORG")
 openai.api_key = config("OPEN_AI_KEY")
